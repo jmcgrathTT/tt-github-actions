@@ -8,6 +8,9 @@ inputs:
   field_id:
     description: "Github Project Field ID"
     required: true
+  issue_id:
+    description: "Github Issue ID used for testing"
+    required: false
 
 runs:
   using: "composite"
@@ -16,6 +19,10 @@ runs:
     - name: Get Issue ID
       id: get_issue_id
       run: |
+        if [[ ! "${{ inputs.issue_id }}" == "" ]]; then
+          echo "issue_id=$issue_id" >> $GITHUB_ENV
+          exit 0
+        fi
         issue_number=${{ github.event.issue.number }}
         issue_details=$(curl -H "Authorization: Bearer ${{ github.token }}" -s "https://api.github.com/repos/${{ github.repository }}/issues/$issue_number")
         issue_id=$(echo "$issue_details" | jq -r '.node_id')
