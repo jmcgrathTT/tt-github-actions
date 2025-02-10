@@ -17,7 +17,7 @@ runs:
       id: get_issue_id
       run: |
         issue_number=${{ github.event.issue.number }}
-        issue_details=$(curl -H "Authorization: Bearer ${{ secrets.ISSUE_TOKEN }}" -s "https://api.github.com/repos/${{ github.repository }}/issues/$issue_number")
+        issue_details=$(curl -H "Authorization: Bearer ${{ github.token }}" -s "https://api.github.com/repos/${{ github.repository }}/issues/$issue_number")
         issue_id=$(echo "$issue_details" | jq -r '.node_id')
         echo "issue_id=$issue_id" >> $GITHUB_ENV
 
@@ -115,7 +115,7 @@ runs:
     - name: Update Project Field
       run: |
         current_date=$(date +%Y-%m-%d)
-        curl -H "Authorization: Bearer ${{ secrets.ISSUE_TOKEN }}" \
+        curl -H "Authorization: Bearer ${{ github.token }}" \
               -H "Content-Type: application/json" \
               -d "{ \"query\": \"mutation { updateProjectV2ItemFieldValue(input: { projectId: \\\"${{ inputs.project_id }}\\\", itemId: \\\"${{ env.ITEM_ID }}\\\", fieldId: \\\"${{ inputs.field_id }}\\\", value: { date: \\\"$current_date\\\" } }) { clientMutationId } }\" }" \
               -X POST \
