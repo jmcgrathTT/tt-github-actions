@@ -213,7 +213,7 @@ def extract_error_lines_from_logs(logs: str) -> List[str]:
     return error_lines
 
 
-def get_job_row_from_github_job(github_job: Dict[str, Any]) -> Dict[str, Any]:
+def get_job_row_from_github_job(github_job: Dict[str, Any], skip_wait_for_workflow_completion: bool) -> Dict[str, Any]:
     github_job_id = github_job.get("id")
 
     logger.info(f"Processing github job with ID {github_job_id}")
@@ -243,7 +243,8 @@ def get_job_row_from_github_job(github_job: Dict[str, Any]) -> Dict[str, Any]:
 
     name = github_job.get("name")
 
-    assert github_job.get("status") == "completed", f"{github_job_id} is not completed"
+    if not skip_wait_for_workflow_completion:
+        assert github_job.get("status") == "completed", f"{github_job_id} is not completed"
 
     # Determine card type based on runner name
     runner_name = (github_job.get("runner_name") or "").upper()
@@ -314,9 +315,9 @@ def get_job_row_from_github_job(github_job: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def get_job_rows_from_github_info(
-    github_pipeline_json: Dict[str, Any], github_jobs_json: Dict[str, Any]
+    github_pipeline_json: Dict[str, Any], github_jobs_json: Dict[str, Any], skip_wait_for_workflow_completion: bool
 ) -> List[Dict[str, Any]]:
-    return list(map(get_job_row_from_github_job, github_jobs_json.get("jobs")))
+    return list(map(get_job_row_from_github_job, github_jobs_json.get("jobs", []), skip_wait_for_workflow_completion))
 
 
 def get_github_runner_environment() -> Dict[str, str]:

@@ -33,6 +33,10 @@ inputs:
   ssh-private-key:
     description: "SSH private key"
     required: false
+  skip_wait_for_workflow_completion:
+    description: "Skip waiting for workflow completion before generating data"
+    required: false
+    default: false
 
 runs:
   using: "composite"
@@ -56,7 +60,7 @@ runs:
       PYTHONPATH: ${{ github.workspace }}
     shell: bash
     run: |
-      python3 ${GITHUB_ACTION_PATH}/src/generate_data.py --run_id ${{ inputs.run_id }}
+      python3 ${GITHUB_ACTION_PATH}/src/generate_data.py --run_id ${{ inputs.run_id }} --skip_wait_for_workflow_completion ${{ inputs.skip_wait_for_workflow_completion }}
       # Workaround: Copy file to avoid GH upload filename limitations
       mkdir -p reports_json && cp *.json* reports_json/ && zip -rq reports_json.zip reports_json || true
 

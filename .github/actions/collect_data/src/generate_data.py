@@ -13,7 +13,7 @@ from optests import create_optest_reports, get_optest_filename
 from shared import is_failure
 
 
-def create_pipeline_json(workflow_filename: str, jobs_filename: str, workflow_outputs_dir):
+def create_pipeline_json(workflow_filename: str, jobs_filename: str, workflow_outputs_dir, skip_wait_for_workflow_completion: bool):
 
     github_runner_environment = get_github_runner_environment()
     pipeline = create_cicd_json_for_data_analysis(
@@ -21,6 +21,7 @@ def create_pipeline_json(workflow_filename: str, jobs_filename: str, workflow_ou
         github_runner_environment,
         workflow_filename,
         jobs_filename,
+        skip_wait_for_workflow_completion,
     )
 
     report_filename = get_cicd_json_filename(pipeline)
@@ -79,6 +80,13 @@ if __name__ == "__main__":
         default="generated/cicd",
         help="Output directory for the pipeline json",
     )
+    parser.add_argument(
+        "--skip_wait_for_workflow_completion",
+        type=bool,
+        required=False,
+        default=False,
+        help="Skip waiting for workflow completion before generating data",
+    )
     args = parser.parse_args()
 
     logger.info(f"Creating pipeline JSON for workflow run ID {args.run_id}")
@@ -86,6 +94,7 @@ if __name__ == "__main__":
         workflow_filename=f"{args.output_dir}/{args.run_id}/workflow.json",
         jobs_filename=f"{args.output_dir}/{args.run_id}/workflow_jobs.json",
         workflow_outputs_dir=args.output_dir,
+        skip_wait_for_workflow_completion=args.skip_wait_for_workflow_completion,
     )
 
     logger.info(f"Creating benchmark JSON for workflow run ID {args.run_id}")
