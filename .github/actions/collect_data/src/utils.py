@@ -317,7 +317,12 @@ def get_job_row_from_github_job(github_job: Dict[str, Any], skip_wait_for_workfl
 def get_job_rows_from_github_info(
     github_pipeline_json: Dict[str, Any], github_jobs_json: Dict[str, Any], skip_wait_for_workflow_completion: bool
 ) -> List[Dict[str, Any]]:
-    return list(map(get_job_row_from_github_job, github_jobs_json.get("jobs", []), skip_wait_for_workflow_completion))
+    results = []
+    for job in github_jobs_json.get("jobs", []):
+        job_result = get_job_row_from_github_job(job, skip_wait_for_workflow_completion)
+        if job_result is not None:
+            results.append(job_result)
+    return results
 
 
 def get_github_runner_environment() -> Dict[str, str]:

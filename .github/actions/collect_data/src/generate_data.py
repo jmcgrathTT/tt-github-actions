@@ -13,7 +13,7 @@ from optests import create_optest_reports, get_optest_filename
 from shared import is_failure
 
 
-def create_pipeline_json(workflow_filename: str, jobs_filename: str, workflow_outputs_dir, skip_wait_for_workflow_completion: bool):
+def create_pipeline_json(workflow_filename: str, jobs_filename: str, workflow_outputs_dir, skip_wait_for_workflow_completion: bool = False):
 
     github_runner_environment = get_github_runner_environment()
     pipeline = create_cicd_json_for_data_analysis(
